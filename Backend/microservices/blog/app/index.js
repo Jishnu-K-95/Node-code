@@ -42,7 +42,7 @@ app.use(
 
 app.use(
    rateLimit({
-      max: 2,
+      max: 100,
       windowMs: 1000 * 60 * 60,
       message: "<h1>Too many requests</h1>",
    })
