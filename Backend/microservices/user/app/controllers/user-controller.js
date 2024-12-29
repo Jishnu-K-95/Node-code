@@ -72,7 +72,7 @@ export const login = async (req, res, next) => {
             }
 
             //new user
-            jwt.verify(password, process.env.JWT_SALT, (err, dataDecoded) => {
+            jwt.verify(hashPassword, process.env.JWT_SALT, (err, dataDecoded) => {
                if (err) {
                   next(err);
                }
