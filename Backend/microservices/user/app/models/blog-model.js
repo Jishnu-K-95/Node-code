@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-
-const aggregatePaginate = require("mongoose-aggregate-paginate-v2");
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const blogSchema = new mongoose.Schema({
    title: {

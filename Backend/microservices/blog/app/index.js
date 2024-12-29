@@ -5,7 +5,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 import express from "express";
-import path from "path";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import cors from "cors";
