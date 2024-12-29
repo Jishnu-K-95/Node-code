@@ -22,7 +22,7 @@ import connectMongoDb from "./helpers/mongoose/index.js";
 import blogRouter from "./routers/blog-route.js";
 
 dotenv.config({
-   path: path.join(__dirname + ".env"),
+   path: path.join(__dirname, ".env"),
 });
 
 const app = express();
@@ -73,5 +73,7 @@ app.use((error, req, res, next) => {
 
    return res.status(500).send("<h1>Something went wrong!</h1>");
 });
+
+connectMongoDb();
 
 export default app;
