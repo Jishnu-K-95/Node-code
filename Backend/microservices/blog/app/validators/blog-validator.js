@@ -15,6 +15,9 @@ const blogValidate = (method) => {
             body("content", "Provide a content").trim().notEmpty(),
          ];
 
+      case "checkBlogId":
+         return [param("blogId", "Provide an ID").trim().notEmpty()];
+
       default:
          break;
    }

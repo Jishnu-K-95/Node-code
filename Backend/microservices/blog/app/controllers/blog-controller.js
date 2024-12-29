@@ -2,6 +2,8 @@ import { validationResult } from "express-validator";
 
 import BlogModel from "../models/blog-model.js";
 
+import UserModel from "../models/user-model.js";
+
 export const create = async (req, res, next) => {
    try {
       const errors = validationResult(req);
@@ -52,22 +54,21 @@ export const getBlogs = async (req, res, next) => {
          as: "author",
       });
 
-      blogsAggregateQuery.match([
-         {
-            isDeleted: false,
-            "$author.isDeleted": false,
-         },
-      ]);
+      blogsAggregateQuery.match({
+         isDeleted: false,
+         "author.isDeleted": false,
+      });
 
       blogsAggregateQuery.project({
          _id: 1,
          title: 1,
          content: 1,
-         shortNote: {
-            $concat: [{ $ifNull: ["$title", ""] }, " ", { $ifNull: ["$author.username", ""] }],
-         },
          createdAt: 1,
          updatedAt: 1,
+         author: {
+            username: 1,
+            email: 1,
+         },
       });
 
       blogsAggregateQuery.sort({
@@ -105,6 +106,16 @@ export const getBlogs = async (req, res, next) => {
 
 export const viewBlog = async (req, res, next) => {
    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+         return res.status(400).json({
+            Message: errors
+               .array({ onlyFirstError: true })
+               .map((x) => x.msg)
+               .toString(),
+         });
+      }
+
       const { blogId } = req.params;
 
       BlogModel.findById(blogId)
@@ -128,6 +139,16 @@ export const viewBlog = async (req, res, next) => {
 
 export const editBlog = async (req, res, next) => {
    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+         return res.status(400).json({
+            Message: errors
+               .array({ onlyFirstError: true })
+               .map((x) => x.msg)
+               .toString(),
+         });
+      }
+
       const { blogId } = req.params;
       const { title, content } = req.body;
 

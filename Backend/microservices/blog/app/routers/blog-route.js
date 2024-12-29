@@ -18,10 +18,16 @@ router.post("/register", userAuthentication, blogValidate("blogCreate"), create)
 
 router.get("/lists", userAuthentication, getBlogs);
 
-router.get("/view/:blogId", userAuthentication, viewBlog);
+router.get("/view/:blogId?", userAuthentication, blogValidate("checkBlogId"), viewBlog);
 
-router.post("/view/:blogId", userAuthentication, editBlog);
+router.put(
+   "/edit/:blogId?",
+   userAuthentication,
+   blogValidate("checkBlogId"),
+   blogValidate("blogUpdate"),
+   editBlog
+);
 
-router.delete("/delete/:blogId", userAuthentication, deleteBlog);
+router.delete("/delete/:blogId", userAuthentication, blogValidate("checkBlogId"), deleteBlog);
 
 export default router;
