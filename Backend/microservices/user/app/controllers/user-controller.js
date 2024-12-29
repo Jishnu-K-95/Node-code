@@ -114,18 +114,15 @@ export const getUsers = async (req, res, next) => {
          as: "blogs",
       });
 
-      usersAggregateQuery.match([
-         {
-            isDeleted: false,
-            "$blogs.isDeleted": false,
-         },
-      ]);
+      usersAggregateQuery.match({
+         isDeleted: false,
+         "blogs.isDeleted": false,
+      });
 
       usersAggregateQuery.project({
          _id: 1,
          username: 1,
          email: 1,
-         password: 0,
          Status: {
             $cond: {
                if: { $eq: ["$isDeleted", false] },
@@ -134,7 +131,8 @@ export const getUsers = async (req, res, next) => {
             },
          },
          createdAt: 1,
-         updaredAt: 1,
+         updatedAt: 1,
+         blogs: 1,
       });
 
       usersAggregateQuery.sort({

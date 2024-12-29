@@ -20,7 +20,7 @@ export const create = async (req, res, next) => {
          .exec()
          .then((blogsCount) => {
             if (blogsCount > 0) {
-               return res.status(400).send("User already exists");
+               return res.status(400).send("Blog already exists");
             }
 
             BlogModel.create({
@@ -67,7 +67,7 @@ export const getBlogs = async (req, res, next) => {
             $concat: [{ $ifNull: ["$title", ""] }, " ", { $ifNull: ["$author.username", ""] }],
          },
          createdAt: 1,
-         updaredAt: 1,
+         updatedAt: 1,
       });
 
       blogsAggregateQuery.sort({

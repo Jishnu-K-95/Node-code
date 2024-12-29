@@ -26,7 +26,7 @@ const blogSchema = new mongoose.Schema({
       default: () => Date.now(),
       immutable: true,
    },
-   updaredAt: {
+   updatedAt: {
       type: mongoose.SchemaTypes.Date,
       required: true,
       default: () => Date.now(),
