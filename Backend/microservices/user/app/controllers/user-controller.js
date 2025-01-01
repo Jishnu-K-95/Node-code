@@ -8,16 +8,6 @@ import BlogModel from "../models/blog-model.js";
 
 export const registration = async (req, res, next) => {
    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-         return res.status(400).json({
-            Message: errors
-               .array({ onlyFirstError: true })
-               .map((x) => x.msg)
-               .toString(),
-         });
-      }
-
       const { username, email, password } = req.body;
 
       UserModel.countDocuments({ email: email, isDeleted: false })
@@ -50,16 +40,6 @@ export const registration = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-         return res.status(400).json({
-            Message: errors
-               .array({ onlyFirstError: true })
-               .map((x) => x.msg)
-               .toString(),
-         });
-      }
-
       const { email, password } = req.body;
 
       const hashPassword = jwt.sign(password, process.env.JWT_SALT);
@@ -107,10 +87,25 @@ export const getUsers = async (req, res, next) => {
    try {
       const usersAggregateQuery = UserModel.aggregate();
 
+      const { blogsLimit = 10 } = req.query;
+
       usersAggregateQuery.lookup({
          from: "blogs",
-         localField: "_id",
-         foreignField: "author",
+         let: {
+            userId: "$_id",
+         },
+         pipeline: [
+            {
+               $match: {
+                  $expr: {
+                     $eq: ["$author", "$$userId"],
+                  },
+               },
+            },
+            {
+               $limit: parseInt(blogsLimit, 10),
+            },
+         ],
          as: "blogs",
       });
 
@@ -123,6 +118,13 @@ export const getUsers = async (req, res, next) => {
          _id: 1,
          username: 1,
          email: 1,
+         blogs: {
+            title: 1,
+            content: 1,
+         },
+         blogsCount: {
+            $size: "$blogs",
+         },
          Status: {
             $cond: {
                if: { $eq: ["$isDeleted", false] },
@@ -132,7 +134,6 @@ export const getUsers = async (req, res, next) => {
          },
          createdAt: 1,
          updatedAt: 1,
-         blogs: 1,
       });
 
       usersAggregateQuery.sort({
